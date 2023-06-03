@@ -1,0 +1,44 @@
+name: akeneo
+recipe: symfony
+config:
+  webroot: public
+services:
+  appserver:
+    type: php:8.1
+    build_as_root:
+      - curl -sL https://deb.nodesource.com/setup_18.x | bash -
+      - apt-get install -y nodejs
+      - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+      - echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+      - apt update && apt install yarn
+  database:
+    type: mysql:8.0
+    creds:
+      user: akeneo_pim
+      password: akeneo_pim
+      database: akeneo_pim
+  mailhog:
+    type: mailhog
+  elasticsearch:
+    type: elasticsearch:8
+tooling:
+  make:
+    service: appserver
+    description: Runs Akeneo make command with NO_DOCKER=true
+    cmd: make
+    env:
+      NO_DOCKER: true
+  yarn:
+    service: appserver
+    description: Runs yarn command inside appserver container
+    cmd: yarn
+    env:
+      NO_DOCKER: true
+  akeneo-install:
+    service: appserver
+    description: Installs Akeneo in current folder in dev mode
+    cmd: 
+      - composer create-project akeneo/pim-community-standard tmp "7.0.*@stable"
+      - && cp -r tmp/. . && rm -rf tmp
+      - && if [ ! -f public/.htaccess ]; then echo "RewriteEngine On\n\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^(.*)$ index.php [QSA,L]" > public/.htaccess ; fi
+      - && NO_DOCKER=true make dev
