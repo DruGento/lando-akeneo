@@ -17,6 +17,10 @@ run `NO_DOCKER=true make dev`
 
 ## 🎮 Usage
 
+Akeneo is available at http://akeneo.lndo.site
+
+Run `lando info` command to check running services and configuration.
+
 This config uses Lando recipe for Symfony. Documentation is available [here](https://docs.lando.dev/symfony/)
 
 The recipe comes with preconfigured commands to run composer, console and other:
@@ -28,6 +32,11 @@ The recipe comes with preconfigured commands to run composer, console and other:
 * `lando mysql`             Drops into a MySQL shell on a database service
 * `lando php`               Runs php commands
 
+Additional commands added in this repository:
+
+* `lando akeneo-install`    Installs Akeneo
+* `lando make`              make
+* `lando yarn`              Runs Yarn command inside container
 
 ## ⚖️ License
 
